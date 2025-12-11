@@ -155,6 +155,7 @@ public class AlbumDao {
         return plays;
     }
 
+
     public List<Album> searchAlbums(String searchTerm) {
         List<Album> albums = new ArrayList<>();
         String query = "SELECT al.album_id, al.artist_id, al.title, al.release_year, ar.name as artist_name " +

@@ -6,7 +6,9 @@ import org.springframework.stereotype.Repository;
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public class ArtistDao {
@@ -57,6 +59,46 @@ public class ArtistDao {
 
         return null;
     }
+    public Map<String, Object> getTopAlbum(int artistId) {
+        Map<String, Object> plays = new HashMap<>();
+        String query = "SELECT" +
+                "    a.album_id," +
+                "    ar.artist_id," +
+                "    a.title," +
+                "    a.release_year," +
+                "    ar.name," +
+                "    COUNT(ap.play_id) AS play_count " +
+                "FROM albums AS a " +
+                "LEFT JOIN album_plays AS ap ON a.album_id = ap.album_id " +
+                "JOIN artists AS ar ON a.artist_id = ar.artist_id " +
+                "WHERE ar.artist_id = ? " +
+                "GROUP BY a.album_id, a.title, ar.artist_id " +
+                "ORDER BY play_count " +
+                "Limit 1;" ;
+
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+
+            statement.setInt(1, artistId);
+
+            try (ResultSet results = statement.executeQuery()) {
+                while (results.next()) {
+                    plays.put("albumId",results.getInt(1));
+                    plays.put("artistId",results.getInt(2));
+                    plays.put("title",results.getString(3));
+                    plays.put("releaseYear",results.getInt(4));
+                    plays.put("artistName",results.getString(5));
+                    plays.put("playCount",results.getInt(6));
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Error getting top artist album play count", e);
+        }
+
+        return plays;
+    }
+
 
     public List<Artist> searchArtists(String searchTerm) {
         List<Artist> artists = new ArrayList<>();

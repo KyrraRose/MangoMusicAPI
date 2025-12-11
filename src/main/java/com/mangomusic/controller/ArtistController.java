@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/artists")
@@ -33,6 +34,11 @@ public class ArtistController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(artist);
+    }
+
+    @GetMapping("/{id}/top-album")
+    public ResponseEntity<Map<String, Object>> getTopAlbum(@PathVariable int id){
+        return ResponseEntity.ok(artistService.getTopAlbum(id));
     }
 
     @GetMapping("/genres")

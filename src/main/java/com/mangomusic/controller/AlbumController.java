@@ -51,6 +51,7 @@ public class AlbumController {
         return ResponseEntity.ok(albumService.getAlbumPlayCount(id));
     }
 
+
     @PostMapping
     public ResponseEntity<Album> createAlbum(@RequestBody Album album) {
         try {
